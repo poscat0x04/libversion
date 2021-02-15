@@ -11,11 +11,13 @@ module Foreign.Libversion
   )
 where
 
-import Data.ByteString (ByteString, useAsCString)
+import Data.ByteString (ByteString)
+import Data.ByteString.Unsafe (unsafeUseAsCString)
 import Data.Coerce (coerce)
 import Data.String (IsString)
 import Foreign.C (CInt (..), CString)
-import System.IO.Unsafe (unsafePerformIO)
+import System.IO.Unsafe (unsafeDupablePerformIO)
+import Unsafe.Coerce (unsafeCoerce)
 
 foreign import ccall unsafe "version_compare2"
   _compareVersion :: CString -> CString -> CInt
@@ -66,9 +68,9 @@ instance Enum VersionFlag where
 -- | Compare version strings @v1@ and @v2@
 compareVersion :: ByteString -> ByteString -> Ordering
 compareVersion ver1 ver2 =
-  unsafePerformIO $
-    useAsCString ver1 $ \v1 ->
-      useAsCString ver2 $ \v2 ->
+  unsafeDupablePerformIO $
+    unsafeUseAsCString ver1 $ \v1 ->
+      unsafeUseAsCString ver2 $ \v2 ->
         pure $
           case _compareVersion v1 v2 of
             1 -> GT
@@ -79,12 +81,15 @@ compareVersion ver1 ver2 =
 -- | Compare version strings @v1@ and @v2@ with additional flags
 compareVersion' :: VersionFlag -> VersionFlag -> ByteString -> ByteString -> Ordering
 compareVersion' flag1 flag2 ver1 ver2 =
-  unsafePerformIO $
-    useAsCString ver1 $ \v1 ->
-      useAsCString ver2 $ \v2 ->
+  unsafeDupablePerformIO $
+    unsafeUseAsCString ver1 $ \v1 ->
+      unsafeUseAsCString ver2 $ \v2 ->
         pure $
-          case _compareVersion' v1 v2 (toEnum $ fromEnum flag1) (toEnum $ fromEnum flag2) of
+          case _compareVersion' v1 v2 f1 f2 of
             1 -> GT
             0 -> EQ
             -1 -> LT
             v -> error $ "unknown return value " <> show v <> " from version_compare4"
+  where
+    f1 = unsafeCoerce (fromEnum flag1)
+    f2 = unsafeCoerce (fromEnum flag2)
