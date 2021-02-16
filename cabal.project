@@ -1,6 +1,6 @@
 packages: .
 
-package nix-index
+package libversion
   ghc-options: -Wall
                -Wincomplete-uni-patterns
                -Wincomplete-record-updates
