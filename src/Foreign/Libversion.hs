@@ -78,7 +78,12 @@ instance Eq VersionString' where
   v1 == v2 = v1 `compare` v2 == EQ
 
 -- | Compare version strings @v1@ and @v2@
-compareVersion :: ByteString -> ByteString -> Ordering
+compareVersion ::
+  -- | v1
+  ByteString ->
+  -- | v2
+  ByteString ->
+  Ordering
 compareVersion ver1 ver2 =
   unsafeDupablePerformIO $
     unsafeUseAsCString ver1 $ \v1 ->
@@ -91,7 +96,16 @@ compareVersion ver1 ver2 =
             v -> error $ "unknown return value " <> show v <> " from version_compare2"
 
 -- | Compare version strings @v1@ and @v2@ with additional flags
-compareVersion' :: VersionFlag -> VersionFlag -> ByteString -> ByteString -> Ordering
+compareVersion' ::
+  -- | f1
+  VersionFlag ->
+  -- | f2
+  VersionFlag ->
+  -- | v1
+  ByteString ->
+  -- | v2
+  ByteString ->
+  Ordering
 compareVersion' flag1 flag2 ver1 ver2 =
   unsafeDupablePerformIO $
     unsafeUseAsCString ver1 $ \v1 ->
