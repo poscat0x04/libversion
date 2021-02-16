@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          libversion
-version:       0.1.0
+version:       0.1.1
 
 synopsis:      Haskell binding to libversion
 description:   Haskell binding to libversion, an advanced version string comparison library
@@ -10,7 +10,7 @@ license-file:  LICENSE
 author:        Poscat
 maintainer:    poscat@mail.poscat.moe
 copyright:     Copyright (c) Poscat 2020
-stability:     alpha
+stability:     stable
 homepage:      https://github.com/poscat0x04/libversion
 bug-reports:   https://github.com/poscat0x04/libversion/issues
 
