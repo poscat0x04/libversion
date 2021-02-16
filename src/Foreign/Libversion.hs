@@ -5,6 +5,7 @@
 -- | Bindings to libversion
 module Foreign.Libversion
   ( VersionString (..),
+    VersionString' (..),
     VersionFlag (..),
     compareVersion,
     compareVersion',
@@ -64,6 +65,17 @@ instance Enum VersionFlag where
     | i == 4 = LowerBound
     | i == 8 = UpperBound
     | otherwise = error $ "VersionFlag: fromEnum called with bad argument " <> show i
+
+-- | A wrapper around 'ByteString' like 'VersionString' but has an 'VersionFlag' attached.
+--   Uses 'compareVersion'' to implement the 'Ord' instance
+data VersionString' = VersionString' ByteString VersionFlag
+  deriving (Show)
+
+instance Ord VersionString' where
+  VersionString' s1 f1 `compare` VersionString' s2 f2 = compareVersion' f1 f2 s1 s2
+
+instance Eq VersionString' where
+  v1 == v2 = v1 `compare` v2 == EQ
 
 -- | Compare version strings @v1@ and @v2@
 compareVersion :: ByteString -> ByteString -> Ordering
